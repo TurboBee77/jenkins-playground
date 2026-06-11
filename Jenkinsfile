@@ -2,7 +2,7 @@ pipeline {
 
   agent any
 
-  enviroment {
+  environment  {
     APP_NAME = "jenkins-playground"
   }
 
