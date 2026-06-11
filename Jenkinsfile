@@ -1,47 +1,120 @@
 pipeline {
+    agent any
 
-  agent any
+    environment {
+        APP_VERSION = "1.0.0"
+        ENVIRONMENT = "DEV"
+        DEPLOY_ENABLED = "true"
 
-  environment  {
-    APP_NAME = "jenkins-playground"
-  }
-
-  stages {
-
-    stage('Hello') {
-
-      steps {
-
-        echo 'Building ${APP_NAME}'
-      }
+        AUTHOR = ""
+        BUILD_TIME = ""
     }
 
-    stage('Check Tools') {
-      steps {
-        sh 'git --version'
-        sh 'python3 --version || python --version'
-      }
+    stages {
+
+        stage('Info') {
+            steps {
+                script {
+                        AUTHOR = sh(
+                            script: "git log -1 --pretty=format:'%an'",
+                            returnStdout: true
+                        ).trim()
+                        echo "Autor: ${AUTHOR}"
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    try {
+                        echo "Building application..."
+                        sh "echo Build OK"
+
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error("Build failed")
+                    }
+                }
+            }
+        }
+
+        stage('Test') {
+          
+            steps {
+                script {
+                    try {
+                        echo "Running tests..."
+                        sh "echo Tests OK"
+
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error("Tests failed")
+                    }
+                }
+            }
+        }
+
+        stage('Deploy') {
+
+            when {
+                expression {
+                    env.DEPLOY_ENABLED == "true"
+                }
+            }
+
+            steps {
+                script {
+                    try {
+                        echo "Deploying version ${APP_VERSION}"
+                        sh "echo Deployment OK"
+
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error("Deploy failed")
+                    }
+                }
+            }
+        }
     }
 
-    stage('Workspace') {
+    post {
 
-      steps {
+        always {
+            script {
+                BUILD_TIME = currentBuild.durationString
+            }
 
-        sh 'pwd'
-        sh 'ls -la'
-      
-      }
+            echo """
+            Build result: ${currentBuild.currentResult}
+            Author: ${AUTHOR}
+            Duration: ${BUILD_TIME}
+            """
+        }
+
+        success {
+            mail to: 'kamil.nierzwicki.ele@gmail.com',
+                 subject: "SUCCESS: ${env.JOB_NAME}",
+                 body: """
+                 Deployment successful
+
+                 Version: ${APP_VERSION}
+                 Environment: ${ENVIRONMENT}
+                 Author: ${AUTHOR}
+                 Duration: ${BUILD_TIME}
+                 """
+        }
+
+        failure {
+            mail to: 'kamil.nierzwicki.ele@gmail.com',
+                 subject: "FAILED: ${env.JOB_NAME}",
+                 body: """
+                 Pipeline failed
+
+                 Job: ${env.JOB_NAME}
+                 Author: ${AUTHOR}
+                 Duration: ${BUILD_TIME}
+                 """
+        }
     }
-  }
-
-  post {
-
-    success { 
-      echo 'Pipeline completed successfully'
-    }
-
-    failure {
-      echo 'Pipaline failed'
-    }
-  }
 }
