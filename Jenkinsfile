@@ -1,3 +1,5 @@
+def AUTHOR
+def BUILD_TIME
 pipeline {
     agent any
 
@@ -5,9 +7,6 @@ pipeline {
         APP_VERSION = "1.0.0"
         ENVIRONMENT = "DEV"
         DEPLOY_ENABLED = "true"
-
-        AUTHOR = ""
-        BUILD_TIME = ""
     }
 
     stages {
@@ -15,15 +14,11 @@ pipeline {
         stage('Info') {
             steps {
                 script {
-                       def author = sh(
+                       AUTHOR = sh(
                             script: "git log -1 --pretty=format:'%an'",
                             returnStdout: true
                         ).trim()
-                        echo "Autor: ${author}"
-                    
-                        env.AUTHOR = author
-
-                        echo "ENV AUTHOR=[${env.AUTHOR}]"
+                        echo "Autor: ${AUTHOR}"
                 }
             }
         }
@@ -86,16 +81,16 @@ pipeline {
 
         always {
             script {
-                env.BUILD_TIME = currentBuild.durationString
+                BUILD_TIME = currentBuild.durationString
                 echo "Duration: ${currentBuild.durationString}"
-                echo "DEBUG AUTHOR=${env.AUTHOR}"
-                echo "DEBUG BUILD_TIME=${env.BUILD_TIME}"
+                echo "DEBUG AUTHOR=${AUTHOR}"
+                echo "DEBUG BUILD_TIME=${BUILD_TIME}"
             }
 
             echo """
             Build result: ${currentBuild.currentResult}
-            Author: ${env.AUTHOR}
-            Duration: ${env.BUILD_TIME}
+            Author: ${AUTHOR}
+            Duration: ${BUILD_TIME}
             """
         }
 
@@ -107,8 +102,8 @@ pipeline {
 
                  Version: ${env.APP_VERSION}
                  Environment: ${env.ENVIRONMENT}
-                 Author: ${env.AUTHOR}
-                 Duration: ${env.BUILD_TIME}
+                 Author: ${AUTHOR}
+                 Duration: ${BUILD_TIME}
                  """
         }
 
@@ -119,8 +114,8 @@ pipeline {
                  Pipeline failed
 
                  Job: ${env.JOB_NAME}
-                 Author: ${env.AUTHOR}
-                 Duration: ${env.BUILD_TIME}
+                 Author: ${AUTHOR}
+                 Duration: ${BUILD_TIME}
                  """
         }
     }
