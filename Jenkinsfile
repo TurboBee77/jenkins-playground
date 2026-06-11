@@ -15,11 +15,11 @@ pipeline {
         stage('Info') {
             steps {
                 script {
-                       def AUTHOR = sh(
+                       env.AUTHOR = sh(
                             script: "git log -1 --pretty=format:'%an'",
                             returnStdout: true
                         ).trim()
-                        echo "Autor: ${AUTHOR}"
+                        echo "Autor: ${env.AUTHOR}"
                 }
             }
         }
@@ -82,13 +82,13 @@ pipeline {
 
         always {
             script {
-                def BUILD_TIME = currentBuild.durationString
+                env.BUILD_TIME = currentBuild.durationString
             }
 
             echo """
             Build result: ${currentBuild.currentResult}
-            Author: ${AUTHOR}
-            Duration: ${BUILD_TIME}
+            Author: ${env.AUTHOR}
+            Duration: ${env.BUILD_TIME}
             """
         }
 
@@ -98,10 +98,10 @@ pipeline {
                  body: """
                  Deployment successful
 
-                 Version: ${APP_VERSION}
-                 Environment: ${ENVIRONMENT}
-                 Author: ${AUTHOR}
-                 Duration: ${BUILD_TIME}
+                 Version: ${env.APP_VERSION}
+                 Environment: ${env.ENVIRONMENT}
+                 Author: ${env.AUTHOR}
+                 Duration: ${env.BUILD_TIME}
                  """
         }
 
@@ -112,8 +112,8 @@ pipeline {
                  Pipeline failed
 
                  Job: ${env.JOB_NAME}
-                 Author: ${AUTHOR}
-                 Duration: ${BUILD_TIME}
+                 Author: ${env.AUTHOR}
+                 Duration: ${env.BUILD_TIME}
                  """
         }
     }
