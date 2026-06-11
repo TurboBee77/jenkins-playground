@@ -83,6 +83,9 @@ pipeline {
         always {
             script {
                 env.BUILD_TIME = currentBuild.durationString
+                echo "Duration: ${currentBuild.durationString}"
+                echo "DEBUG AUTHOR=${env.AUTHOR}"
+                echo "DEBUG BUILD_TIME=${env.BUILD_TIME}"
             }
 
             echo """
