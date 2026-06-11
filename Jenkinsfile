@@ -15,11 +15,15 @@ pipeline {
         stage('Info') {
             steps {
                 script {
-                       env.AUTHOR = sh(
+                       def author = sh(
                             script: "git log -1 --pretty=format:'%an'",
                             returnStdout: true
                         ).trim()
-                        echo "Autor: ${env.AUTHOR}"
+                        echo "Autor: ${author}"
+                    
+                        env.AUTHOR = author
+
+                        echo "ENV AUTHOR=[${env.AUTHOR}]"
                 }
             }
         }
