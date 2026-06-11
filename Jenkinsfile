@@ -12,7 +12,7 @@ pipeline {
 
       steps {
 
-        echo 'Hello from Jenkins'
+        echo 'Building ${APP_NAME}'
       }
     }
 
