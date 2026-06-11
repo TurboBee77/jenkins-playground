@@ -15,7 +15,7 @@ pipeline {
         stage('Info') {
             steps {
                 script {
-                        AUTHOR = sh(
+                       def AUTHOR = sh(
                             script: "git log -1 --pretty=format:'%an'",
                             returnStdout: true
                         ).trim()
@@ -82,7 +82,7 @@ pipeline {
 
         always {
             script {
-                BUILD_TIME = currentBuild.durationString
+                def BUILD_TIME = currentBuild.durationString
             }
 
             echo """
