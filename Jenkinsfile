@@ -2,6 +2,10 @@ pipeline {
 
   agent any
 
+  enviroment {
+    APP_NAME = "jenkins-playground"
+  }
+
   stages {
 
     stage('Hello') {
@@ -12,7 +16,14 @@ pipeline {
       }
     }
 
-    stage('Environment') {
+    stage('Check Tools') {
+      steps {
+        sh 'git --version'
+        sh 'python3 --version || python --version'
+      }
+    }
+
+    stage('Workspace') {
 
       steps {
 
