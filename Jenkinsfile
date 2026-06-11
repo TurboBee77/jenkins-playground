@@ -66,7 +66,7 @@ pipeline {
             steps {
                 script {
                     try {
-                        echo "Deploying version ${APP_VERSION}"
+                        echo "Deploying version ${env.APP_VERSION}"
                         sh "echo Deployment OK"
 
                     } catch (Exception e) {
